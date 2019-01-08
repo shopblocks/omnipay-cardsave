@@ -13,6 +13,8 @@ use Omnipay\Common\AbstractGateway;
  */
 class Gateway extends AbstractGateway
 {
+    private $integrationType = "direct";
+
     public function getName()
     {
         return 'CardSave';
@@ -23,6 +25,8 @@ class Gateway extends AbstractGateway
         return array(
             'merchantId' => '',
             'password' => '',
+            'integrationType' => '',
+            'preSharedKey' => ''
         );
     }
 
@@ -46,8 +50,20 @@ class Gateway extends AbstractGateway
         return $this->setParameter('password', $value);
     }
 
+    public function setIntegrationType($integration)
+    {
+        $this->integrationType = $integration;
+    }
+
+    public function getIntegrationType()
+    {
+        return $this->integrationType;
+    }
+
     public function purchase(array $parameters = array())
     {
+        $parameters['integrationType'] = $this->integrationType;
+
         return $this->createRequest('\Omnipay\CardSave\Message\PurchaseRequest', $parameters);
     }
 

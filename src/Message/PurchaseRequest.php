@@ -11,8 +11,13 @@ use Omnipay\Common\Message\AbstractRequest;
  */
 class PurchaseRequest extends AbstractRequest
 {
-    protected $endpoint = 'https://gw1.cardsaveonlinepayments.com:4430/';
+    protected $endpoint = 'https://mms.cardsaveonlinepayments.com/Pages/PublicPages/PaymentForm.aspx';
     protected $namespace = 'https://www.thepaymentgateway.net/';
+
+    private $INTEGRATION_TYPES = [
+        'direct' => 0,
+        'redirect' => 1
+    ];
 
     public function getMerchantId()
     {
@@ -34,8 +39,46 @@ class PurchaseRequest extends AbstractRequest
         return $this->setParameter('password', $value);
     }
 
+    public function getIntegrationType()
+    {
+        return $this->getParameter('integrationType');
+    }
+
+    public function setIntegrationType($integration)
+    {
+        return $this->setParameter('integrationType', $this->INTEGRATION_TYPES[$integration]);
+    }
+
+    public function getPreSharedKey()
+    {
+        return $this->getParameter('preSharedKey');
+    }
+
+    public function setPreSharedKey($preSharedKey)
+    {
+        return $this->setParameter('preSharedKey', $preSharedKey);
+    }
+
     public function getData()
     {
+        if ($this->getIntegrationType() === $this->INTEGRATION_TYPES['redirect']) {
+            $data = [];
+            $data['HashDigest'] = "";
+            $data['MerchantID'] = $this->getMerchantId();
+            $data['Amount'] = $this->getAmountInteger();
+            $data['CurrencyCode'] = $this->getCurrencyNumeric();
+            $data['OrderID'] = $this->getTransactionId();
+            $data['TransactionType'] = 'SALE';
+            $now = \Carbon\Carbon::now();
+            $data['TransactionDateTime'] = $now->format('Y-m-d H:i:s');
+            $data['CallbackURL'] = $this->getNotifyUrl();
+
+            $hashDigest = $this->generateHash($data);
+            $data['HashDigest'] = $hashDigest;
+
+            return $data;
+        }
+
         $this->validate('amount', 'card');
         $this->getCard()->validate();
 
@@ -79,6 +122,13 @@ class PurchaseRequest extends AbstractRequest
 
     public function sendData($data)
     {
+        $headers = [];
+
+        $httpResponse = $this->httpClient->post($this->endpoint, $headers, $data)->send();
+
+        dd((String) $httpResponse);
+
+
         // the PHP SOAP library sucks, and SimpleXML can't append element trees
         // TODO: find PSR-0 SOAP library
         $document = new DOMDocument('1.0', 'utf-8');
@@ -97,6 +147,35 @@ class PurchaseRequest extends AbstractRequest
 
         $httpResponse = $this->httpClient->post($this->endpoint, $headers, $document->saveXML())->send();
 
+        dd((String) $httpResponse);
+
         return $this->response = new Response($this, $httpResponse->getBody());
+    }
+
+    private function generateHash($data)
+    {
+        $hashString = "";
+
+        $hashString .= "MerchantID=" . ($data['MerchantID'] ?? '');
+        $hashString .= "&Password=" . ($this->getPassword());
+        $hashString .= "&Amount=" . ($data['Amount'] ?? 0);
+        $hashString .= "&CurrencyCode=" . ($data['CurrencyCode'] ?? '');
+        $hashString .= "&OrderID=" . ($data['OrderID'] ?? '');
+        $hashString .= "&TransactionType=" . ($data['TransactionType'] ?? 'sale');
+        $hashString .= "&TransactionDateTime=" . ($data['TransactionDateTime'] ?? '');
+        $hashString .= "&CallbackURL=" . ($data['CallbackURL'] ?? '');
+        $hashString .= "&OrderDescription=" . ($data['OrderDescription'] ?? '');
+        $hashString .= "&CustomerName=" . ($data['CustomerName'] ?? '');
+        $hashString .= "&Address1=" . ($data['Address1'] ?? '');
+        $hashString .= "&Address2=" . ($data['Address2'] ?? '');
+        $hashString .= "&Address3=" . ($data['Address3'] ?? '');
+        $hashString .= "&Address4=" . ($data['Address4'] ?? '');
+        $hashString .= "&City=" . ($data['City'] ?? '');
+        $hashString .= "&State=" . ($data['State'] ?? '');
+        $hashString .= "&PostCode=" . ($data['PostCode'] ?? '');
+        $hashString .= "&CountryCode=" . ($data['CountryCode'] ?? '');
+        $hashString .= "&ResultDeliveryMethod=post";
+
+        return sha1($hashString);
     }
 }
