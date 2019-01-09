@@ -237,7 +237,7 @@ class PurchaseRequest extends AbstractRequest
         $hashString .= "&PostCodeMandatory=false";
         $hashString .= "&StateMandatory=false";
         $hashString .= "&CountryMandatory=false";
-
+        $hashString .= "&ResultDeliveryMethod=POST";
 
         $hashString .= "&ServerResultURL=";
         $hashString .= "&PaymentFormDisplaysResult=false";
