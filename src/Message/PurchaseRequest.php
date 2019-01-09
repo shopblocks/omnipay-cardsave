@@ -70,7 +70,7 @@ class PurchaseRequest extends AbstractRequest
             $data['CurrencyCode'] = $this->getCurrencyNumeric();
 
             $data["EchoAVSCheckResult"] = 'false';
-            $data["EchoCV2CheckResult"] = 'false';
+            $data["EchoCV2CheckResult"] = 'true';
             $data["EchoThreeDSecureAuthenticationCheckResult"] = 'false';
             $data["EchoCardType"] = 'false';
 
@@ -95,7 +95,7 @@ class PurchaseRequest extends AbstractRequest
             $data["EmailAddressEditable"] = 'false';
             $data["PhoneNumberEditable"] = 'false';
 
-            $data['CV2Mandatory'] = 'false';
+            $data['CV2Mandatory'] = 'true';
             $data['Address1Mandatory'] = 'false';
             $data['CityMandatory'] = 'false';
             $data['PostCodeMandatory'] = 'false';
@@ -203,7 +203,7 @@ class PurchaseRequest extends AbstractRequest
         $hashString .= "&CurrencyCode=" . ($data['CurrencyCode'] ?? '');
 
         $hashString .= "&EchoAVSCheckResult=false";
-        $hashString .= "&EchoCV2CheckResult=false";
+        $hashString .= "&EchoCV2CheckResult=true";
         $hashString .= "&EchoThreeDSecureAuthenticationCheckResult=false";
         $hashString .= "&EchoCardType=false";
 
@@ -229,7 +229,7 @@ class PurchaseRequest extends AbstractRequest
         $hashString .= "&EmailAddressEditable=false";
         $hashString .= "&PhoneNumberEditable=false";
 
-        $hashString .= "&CV2Mandatory=false";
+        $hashString .= "&CV2Mandatory=true";
         $hashString .= "&Address1Mandatory=false";
         $hashString .= "&CityMandatory=false";
         $hashString .= "&PostCodeMandatory=false";
