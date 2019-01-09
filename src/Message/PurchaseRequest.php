@@ -189,8 +189,6 @@ class PurchaseRequest extends AbstractRequest
 
         $httpResponse = $this->httpClient->post($this->endpoint, $headers, $document->saveXML())->send();
 
-        dd((String) $httpResponse);
-
         return $this->response = new Response($this, $httpResponse->getBody());
     }
 
