@@ -68,11 +68,44 @@ class PurchaseRequest extends AbstractRequest
             $data['MerchantID'] = $this->getMerchantId();
             $data['Amount'] = $this->getAmountInteger();
             $data['CurrencyCode'] = $this->getCurrencyNumeric();
+
+            $data["EchoAVSCheckResult"] = 'false';
+            $data["EchoCV2CheckResult"] = 'false';
+            $data["EchoThreeDSecureAuthenticationCheckResult"] = 'false';
+            $data["EchoCardType"] = 'false';
+
             $data['OrderID'] = $this->getTransactionId();
             $data['TransactionType'] = 'SALE';
             $now = \Carbon\Carbon::now();
             $data['TransactionDateTime'] = $now->format('Y-m-d H:i:s');
             $data['CallbackURL'] = $this->getNotifyUrl();
+            
+            $data["OrderDescription"] = '';
+            $data["CustomerName"] = '';
+            $data["Address1"] = '';
+            $data["Address2"] = '';
+            $data["Address3"] = '';
+            $data["Address4"] = '';
+            $data["City"] = '';
+            $data["State"] = '';
+            $data["PostCode"] = '';
+            $data["CountryCode"] = '';
+            $data["EmailAddress"] = '';
+            $data["PhoneNumber"] = '';
+            $data["EmailAddressEditable"] = 'false';
+            $data["PhoneNumberEditable"] = 'false';
+
+            $data['CV2Mandatory'] = 'false';
+            $data['Address1Mandatory'] = 'false';
+            $data['CityMandatory'] = 'false';
+            $data['PostCodeMandatory'] = 'false';
+            $data['StateMandatory'] = 'false';
+            $data['CountryMandatory'] = 'false';
+
+            $data["ResultDeliveryMethod"] = 'POST';
+            $data["ServerResultURL"] = '';
+            $data["PaymentFormDisplaysResult"] = 'false';
+            $data['ThreeDSecureComapatMode'] = 'false';
 
             $hashDigest = $this->generateHash($data);
             $data['HashDigest'] = $hashDigest;
@@ -125,12 +158,18 @@ class PurchaseRequest extends AbstractRequest
 
     public function sendData($data)
     {
-        $headers = [];
+        if ($this->getIntegrationType() === $this->INTEGRATION_TYPES['redirect']) {
+            $form = "<form method='post' action='{$this->endpoint}' id='cardsave-form'>";
+            foreach ($data as $key => $value) {
+                $form .= "<input type='hidden' name='{$key}' value='{$value}'>";
+            }
+            $form .= "</form>";
 
-        $httpResponse = $this->httpClient->post($this->endpoint, $headers, $data)->send();
+            $form .= "<script>document.getElementById('cardsave-form').submit();</script>";
 
-        dd((String) $httpResponse);
-
+            echo ($form);
+            exit;
+        }
 
         // the PHP SOAP library sucks, and SimpleXML can't append element trees
         // TODO: find PSR-0 SOAP library
@@ -164,11 +203,19 @@ class PurchaseRequest extends AbstractRequest
         $hashString .= "&Password=" . ($this->getPassword() ?? '');
         $hashString .= "&Amount=" . ($data['Amount'] ?? 0);
         $hashString .= "&CurrencyCode=" . ($data['CurrencyCode'] ?? '');
+
+        $hashString .= "&EchoAVSCheckResult=false";
+        $hashString .= "&EchoCV2CheckResult=false";
+        $hashString .= "&EchoThreeDSecureAuthenticationCheckResult=false";
+        $hashString .= "&EchoCardType=false";
+
         $hashString .= "&OrderID=" . ($data['OrderID'] ?? '');
-        $hashString .= "&TransactionType=" . ($data['TransactionType'] ?? 'sale');
+        $hashString .= "&TransactionType=" . ($data['TransactionType'] ?? 'SALE');
         $hashString .= "&TransactionDateTime=" . ($data['TransactionDateTime'] ?? '');
+
         $hashString .= "&CallbackURL=" . ($data['CallbackURL'] ?? '');
         $hashString .= "&OrderDescription=" . ($data['OrderDescription'] ?? '');
+
         $hashString .= "&CustomerName=" . ($data['CustomerName'] ?? '');
         $hashString .= "&Address1=" . ($data['Address1'] ?? '');
         $hashString .= "&Address2=" . ($data['Address2'] ?? '');
@@ -178,7 +225,22 @@ class PurchaseRequest extends AbstractRequest
         $hashString .= "&State=" . ($data['State'] ?? '');
         $hashString .= "&PostCode=" . ($data['PostCode'] ?? '');
         $hashString .= "&CountryCode=" . ($data['CountryCode'] ?? '');
-        $hashString .= "&ResultDeliveryMethod=POST";
+
+        $hashString .= "&EmailAddress=";
+        $hashString .= "&PhoneNumber=";
+        $hashString .= "&EmailAddressEditable=false";
+        $hashString .= "&PhoneNumberEditable=false";
+
+        $hashString .= "&CV2Mandatory=false";
+        $hashString .= "&Address1Mandatory=false";
+        $hashString .= "&CityMandatory=false";
+        $hashString .= "&PostCodeMandatory=false";
+        $hashString .= "&StateMandatory=false";
+        $hashString .= "&CountryMandatory=false";
+
+
+        $hashString .= "&ServerResultURL=";
+        $hashString .= "&PaymentFormDisplaysResult=false";
 
         return sha1($hashString);
     }
