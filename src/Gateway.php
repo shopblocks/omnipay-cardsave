@@ -5,6 +5,7 @@ namespace Omnipay\CardSave;
 use Omnipay\CardSave\Message\CompletePurchaseRequest;
 use Omnipay\CardSave\Message\PurchaseRequest;
 use Omnipay\Common\AbstractGateway;
+use Omnipay\CardSave\Message\DummyCompletePurchase;
 
 /**
  * CardSave Gateway
@@ -13,8 +14,6 @@ use Omnipay\Common\AbstractGateway;
  */
 class Gateway extends AbstractGateway
 {
-    private $integrationType = "direct";
-
     public function getName()
     {
         return 'CardSave';
@@ -50,14 +49,14 @@ class Gateway extends AbstractGateway
         return $this->setParameter('password', $value);
     }
 
-    public function setIntegrationType($integration)
+    public function setIntegrationType($value)
     {
-        $this->integrationType = $integration;
+        return $this->setParameter('integrationType', $value);
     }
 
     public function getIntegrationType()
     {
-        return $this->integrationType;
+        return $this->getParameter('integrationType');
     }
 
     public function setPreSharedKey($value)
@@ -72,8 +71,6 @@ class Gateway extends AbstractGateway
 
     public function purchase(array $parameters = array())
     {
-        $parameters['integrationType'] = $this->integrationType;
-
         return $this->createRequest('\Omnipay\CardSave\Message\PurchaseRequest', $parameters);
     }
 
@@ -84,6 +81,11 @@ class Gateway extends AbstractGateway
 
     public function completePurchase(array $parameters = array())
     {
+        if ($this->getIntegrationType() == "redirect") {
+            return new DummyCompletePurchase($this->httpClient, $this->httpRequest);
+            $this->createRequest('\Omnipay\CardSave\Message\CompletePurchaseRequest', $parameters);
+        }
+
         return $this->createRequest('\Omnipay\CardSave\Message\CompletePurchaseRequest', $parameters);
     }
 
