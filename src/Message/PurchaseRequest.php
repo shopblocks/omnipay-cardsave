@@ -64,6 +64,7 @@ class PurchaseRequest extends AbstractRequest
         if ($this->getIntegrationType() === $this->INTEGRATION_TYPES['redirect']) {
             $data = [];
             $data['HashDigest'] = "";
+            $data['PreSharedKey'] = $this->getPreSharedKey();
             $data['MerchantID'] = $this->getMerchantId();
             $data['Amount'] = $this->getAmountInteger();
             $data['CurrencyCode'] = $this->getCurrencyNumeric();
@@ -75,6 +76,8 @@ class PurchaseRequest extends AbstractRequest
 
             $hashDigest = $this->generateHash($data);
             $data['HashDigest'] = $hashDigest;
+
+            unset($data['PreSharedKey']);
 
             return $data;
         }
@@ -156,8 +159,9 @@ class PurchaseRequest extends AbstractRequest
     {
         $hashString = "";
 
-        $hashString .= "MerchantID=" . ($data['MerchantID'] ?? '');
-        $hashString .= "&Password=" . ($this->getPassword());
+        $hashString .= "PreSharedKey=" . ($data['PreSharedKey'] ?? '');
+        $hashString .= "&MerchantID=" . ($data['MerchantID'] ?? '');
+        $hashString .= "&Password=" . ($this->getPassword() ?? '');
         $hashString .= "&Amount=" . ($data['Amount'] ?? 0);
         $hashString .= "&CurrencyCode=" . ($data['CurrencyCode'] ?? '');
         $hashString .= "&OrderID=" . ($data['OrderID'] ?? '');
@@ -174,7 +178,7 @@ class PurchaseRequest extends AbstractRequest
         $hashString .= "&State=" . ($data['State'] ?? '');
         $hashString .= "&PostCode=" . ($data['PostCode'] ?? '');
         $hashString .= "&CountryCode=" . ($data['CountryCode'] ?? '');
-        $hashString .= "&ResultDeliveryMethod=post";
+        $hashString .= "&ResultDeliveryMethod=POST";
 
         return sha1($hashString);
     }

@@ -60,6 +60,16 @@ class Gateway extends AbstractGateway
         return $this->integrationType;
     }
 
+    public function setPreSharedKey($value)
+    {
+        return $this->setParameter('preSharedKey', $value);
+    }
+
+    public function getPreSharedKey()
+    {
+        return $this->getParameter('preSharedKey');
+    }
+
     public function purchase(array $parameters = array())
     {
         $parameters['integrationType'] = $this->integrationType;
