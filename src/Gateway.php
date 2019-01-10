@@ -82,8 +82,11 @@ class Gateway extends AbstractGateway
     public function completePurchase(array $parameters = array())
     {
         if ($this->getIntegrationType() == "redirect") {
-            return new DummyCompletePurchase($this->httpClient, $this->httpRequest);
-            $this->createRequest('\Omnipay\CardSave\Message\CompletePurchaseRequest', $parameters);
+            $parameters['PreSharedKey'] = $this->getPreSharedKey();
+            $parameters['Password'] = $this->getPassword();
+            $parameters['MerchantID'] = $this->getMerchantID();
+
+            return new DummyCompletePurchase($this->httpClient, $this->httpRequest, $parameters);
         }
 
         return $this->createRequest('\Omnipay\CardSave\Message\CompletePurchaseRequest', $parameters);
