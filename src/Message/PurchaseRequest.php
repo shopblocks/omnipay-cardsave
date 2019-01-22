@@ -11,7 +11,7 @@ use Omnipay\Common\Message\AbstractRequest;
  */
 class PurchaseRequest extends AbstractRequest
 {
-    protected $endpoint = 'https://mms.cardsaveonlinepayments.com/Pages/PublicPages/PaymentForm.aspx';
+    protected $endpoint = 'https://gw1.cardsaveonlinepayments.com:4430/';
     protected $namespace = 'https://www.thepaymentgateway.net/';
 
     private $INTEGRATION_TYPES = [
@@ -59,9 +59,22 @@ class PurchaseRequest extends AbstractRequest
         return $this->setParameter('preSharedKey', $preSharedKey);
     }
 
+    public function getOrderId()
+    {
+        return $this->getParameter('OrderId');
+    }
+
+    public function setOrderId($value)
+    {
+        return $this->setParameter('OrderId', $value);
+    }
+
     public function getData()
     {
         if ($this->getIntegrationType() === $this->INTEGRATION_TYPES['redirect']) {
+            // A different endpoint is used for hosted payments
+            $this->endpoint = 'https://mms.cardsaveonlinepayments.com/Pages/PublicPages/PaymentForm.aspx';
+
             $data = [];
             $data['HashDigest'] = "";
             $data['PreSharedKey'] = $this->getPreSharedKey();
@@ -158,7 +171,7 @@ class PurchaseRequest extends AbstractRequest
 
     public function sendData($data)
     {
-        if ($this->getIntegrationType() === $this->INTEGRATION_TYPES['redirect']) {
+        if ($this->getIntegrationType() === $this->INTEGRATION_TYPES['redirect'] && is_array($data)) {
             $form = "<form method='post' action='{$this->endpoint}' id='cardsave-form'>";
             foreach ($data as $key => $value) {
                 $form .= "<input type='hidden' name='{$key}' value='{$value}'>";

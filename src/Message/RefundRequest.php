@@ -23,7 +23,7 @@ class RefundRequest extends PurchaseRequest
         $data->PaymentMessage->MerchantAuthentication['Password'] = $this->getPassword();
         $data->PaymentMessage->TransactionDetails['Amount'] = $this->getAmountInteger();
         $data->PaymentMessage->TransactionDetails['CurrencyCode'] = $this->getCurrencyNumeric();
-        $data->PaymentMessage->TransactionDetails->OrderID = $this->getTransactionId();
+        $data->PaymentMessage->TransactionDetails->OrderID = $this->getOrderId();
         $data->PaymentMessage->TransactionDetails->OrderDescription = $this->getDescription();
         $data->PaymentMessage->TransactionDetails->MessageDetails['TransactionType'] = $this->transactionType;
         $data->PaymentMessage->TransactionDetails->MessageDetails['NewTransaction'] = false;
