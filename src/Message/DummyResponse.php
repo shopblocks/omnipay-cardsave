@@ -8,9 +8,9 @@ class DummyResponse extends AbstractResponse
 {
     public function __construct($form)
     {
-        $this->request = $request;
-
         $this->form = $form;
+
+        return $this;
     }
 
     public function isSuccessful()
