@@ -5,7 +5,7 @@ namespace Omnipay\CardSave\Message;
 use DOMDocument;
 use SimpleXMLElement;
 use Omnipay\Common\Message\AbstractRequest;
-use src\Message\DummyResponse;
+use Omnipay\CardSave\Message\DummyResponse;
 
 /**
  * CardSave Purchase Request
