@@ -192,7 +192,7 @@ class PurchaseRequest extends AbstractRequest
             $form .= "<script>document.getElementById('cardsave-form').submit();</script>";
 
             if ($this->getReturnForm()) {
-                return $this->response = new DummyResponse($this, $form);
+                return $this->response = new DummyResponse($form);
             }
 
             echo ($form);

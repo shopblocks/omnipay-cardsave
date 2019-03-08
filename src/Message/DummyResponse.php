@@ -6,7 +6,7 @@ use Omnipay\Common\Message\AbstractResponse;
 
 class DummyResponse extends AbstractResponse
 {
-    public function __construct(RequestInterface $request, $form)
+    public function __construct($form)
     {
         $this->request = $request;
 
