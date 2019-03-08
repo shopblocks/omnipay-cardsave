@@ -2,6 +2,8 @@
 
 namespace Omnipay\CardSave\Message;
 
+use Omnipay\Common\Message\AbstractResponse;
+
 class DummyResponse extends AbstractResponse
 {
     public function __construct(RequestInterface $request, $form)
