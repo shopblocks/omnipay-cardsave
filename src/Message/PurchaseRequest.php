@@ -5,6 +5,7 @@ namespace Omnipay\CardSave\Message;
 use DOMDocument;
 use SimpleXMLElement;
 use Omnipay\Common\Message\AbstractRequest;
+use src\Message\DummyResponse;
 
 /**
  * CardSave Purchase Request
@@ -191,7 +192,7 @@ class PurchaseRequest extends AbstractRequest
             $form .= "<script>document.getElementById('cardsave-form').submit();</script>";
 
             if ($this->getReturnForm()) {
-                return $form;
+                return $this->response = new DummyResponse($this, $form);
             }
 
             echo ($form);
