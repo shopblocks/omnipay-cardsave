@@ -69,6 +69,16 @@ class PurchaseRequest extends AbstractRequest
         return $this->setParameter('OrderId', $value);
     }
 
+    public function getReturnForm()
+    {
+        return $this->getParameter('returnForm');
+    }
+
+    public function setReturnForm($value)
+    {
+        return $this->setParameter('returnForm', $value);
+    }
+
     public function getData()
     {
         if ($this->getIntegrationType() === $this->INTEGRATION_TYPES['redirect']) {
@@ -179,6 +189,10 @@ class PurchaseRequest extends AbstractRequest
             $form .= "</form>";
 
             $form .= "<script>document.getElementById('cardsave-form').submit();</script>";
+
+            if ($this->getReturnForm()) {
+                return $form;
+            }
 
             echo ($form);
             exit;

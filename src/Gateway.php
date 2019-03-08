@@ -25,7 +25,8 @@ class Gateway extends AbstractGateway
             'merchantId' => '',
             'password' => '',
             'integrationType' => '',
-            'preSharedKey' => ''
+            'preSharedKey' => '',
+            'returnForm' => ''
         );
     }
 
@@ -77,6 +78,16 @@ class Gateway extends AbstractGateway
     public function getOrderId()
     {
         return $this->getParameter('OrderId');
+    }
+
+    public function getReturnForm()
+    {
+        return $this->getParameter('returnForm');
+    }
+
+    public function setReturnForm($value)
+    {
+        return $this->setParameter('returnForm', $value);
     }
 
     public function purchase(array $parameters = array())
