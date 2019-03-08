@@ -15,7 +15,7 @@ class DummyResponse extends AbstractResponse
 
     public function isSuccessful()
     {
-        return preg_match("/<html>.*<form method='post' action='https:\/\/mms.cardsaveonlinepayments.com\/Pages\/PublicPages\/PaymentForm.aspx' id='cardsave-form'.*<\/form><script>.*cardsave-form'\)\.submit.*<\/script>.*<\/html>/", $this->form);
+        return preg_match("/<form method='post' action='https:\/\/mms.cardsaveonlinepayments.com\/Pages\/PublicPages\/PaymentForm.aspx' id='cardsave-form'.*<\/form><script>.*cardsave-form'\)\.submit.*<\/script>/", $this->form);
     }
 
     public function isForm()
