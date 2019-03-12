@@ -31,4 +31,20 @@ class DummyResponse extends AbstractResponse
     {
         return $this->form;
     }
+
+    public function getForm()
+    {
+        $form = "<form method='post' action='{$this->form['endpoint']}' id='cardsave-form'>";
+        foreach ($this->form as $key => $value) {
+            if ($key == "endpoint") {
+                continue;
+            }
+
+            $form .= "<input type='hidden' name='{$key}' value='{$value}'>";
+        }
+        $form .= "</form>";
+        $form .= "<script>document.getElementById('cardsave-form').submit();</script>";
+
+        return $form;
+    }
 }
