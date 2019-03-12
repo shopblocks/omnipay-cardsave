@@ -15,7 +15,11 @@ class DummyResponse extends AbstractResponse
 
     public function isSuccessful()
     {
-        return preg_match("/<form method='post' action='https:\/\/mms.cardsaveonlinepayments.com\/Pages\/PublicPages\/PaymentForm.aspx' id='cardsave-form'.*<\/form><script>.*cardsave-form'\)\.submit.*<\/script>/", $this->form);
+        if (is_array($this->form)) {
+            return !empty($this->form['endpoint']) && $this->form['endpoint'] == "https://mms.cardsaveonlinepayments.com/Pages/PublicPages/PaymentForm.aspx" && !empty($this->form['HashDigest']) && preg_match('/\w+/', $this->form['HashDigest']);
+        } else {
+            return preg_match("/<form method='post' action='https:\/\/mms.cardsaveonlinepayments.com\/Pages\/PublicPages\/PaymentForm.aspx' id='cardsave-form'.*<\/form><script>.*cardsave-form'\)\.submit.*<\/script>/", $this->form);
+        }
     }
 
     public function isForm()

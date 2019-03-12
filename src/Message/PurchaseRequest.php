@@ -183,16 +183,19 @@ class PurchaseRequest extends AbstractRequest
     public function sendData($data)
     {
         if ($this->getIntegrationType() === $this->INTEGRATION_TYPES['redirect'] && is_array($data)) {
+            $response = [];
             $form = "<form method='post' action='{$this->endpoint}' id='cardsave-form'>";
+            $response['endpoint'] = $this->endpoint;
             foreach ($data as $key => $value) {
                 $form .= "<input type='hidden' name='{$key}' value='{$value}'>";
+                $response[$key] = $value;
             }
             $form .= "</form>";
 
             $form .= "<script>document.getElementById('cardsave-form').submit();</script>";
 
             if ($this->getReturnForm()) {
-                return new DummyResponse($form);
+                return new DummyResponse($response);
             }
 
             echo ($form);
