@@ -51,6 +51,10 @@ class Gateway extends AbstractGateway
 
     public function setIntegrationType($value)
     {
+        if (empty($this->INTEGRATION_TYPES[$integration])) {
+            return $this->setParameter('integrationType', $this->INTEGRATION_TYPES[0]);
+        }
+        
         return $this->setParameter('integrationType', $value);
     }
 
